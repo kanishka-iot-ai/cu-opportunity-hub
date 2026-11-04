@@ -154,6 +154,26 @@ All 9 automated unit and integration tests verify authentication, multi-criteria
 
 ---
 
+## 🌐 Vercel & Production Deployment
+
+CU Opportunity Hub is configured out-of-the-box for **Full-Stack Vercel Deployment** using `vercel.json`:
+* **Frontend:** Static build using Vite (`frontend/dist`)
+* **Backend:** Serverless Python WSGI handler (`api/index.py` at `/api/*`) with automated cold-start database creation and seeding.
+
+### Deploy to Vercel via GitHub:
+1. Create a repository on GitHub (e.g., `cu-opportunity-hub`).
+2. Push your code:
+   ```bash
+   git remote add origin https://github.com/<your-username>/cu-opportunity-hub.git
+   git branch -M main
+   git push -u origin main
+   ```
+3. Import the repository in [Vercel Dashboard](https://vercel.com/new).
+4. Vercel automatically detects `vercel.json` and builds both frontend and backend.
+5. (Optional) In Vercel Environment Variables, provide your cloud database URL (`DATABASE_URL=mysql+pymysql://...` or PostgreSQL). If omitted, an auto-seeded SQLite database is dynamically initialized in `/tmp`.
+
+---
+
 ## 📁 Project Directory Structure
 ```
 campus opprotunity/
