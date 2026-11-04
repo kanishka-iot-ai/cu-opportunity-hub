@@ -190,7 +190,7 @@ def seed_database():
         student_user = User(
             uid='25BIT10180',
             email='25bit10180@cuchd.in',
-            full_name='Kanishka Giri',
+            full_name='Angel',
             role='STUDENT',
             is_active=True
         )
@@ -207,10 +207,10 @@ def seed_database():
             cgpa=8.85,
             phone='+91 98765 43210',
             bio='Aspiring Software Engineer & AI Researcher at Chandigarh University. Passionate about Full Stack Development, Cloud Engineering, and Hackathons.',
-            linkedin_url='https://linkedin.com/in/kanishka-giri',
-            github_url='https://github.com/kanishka-giri',
-            portfolio_url='https://kanishkagiri.dev',
-            avatar_seed='kanishka_cu_25'
+            linkedin_url='https://linkedin.com/in/angel',
+            github_url='https://github.com/angel',
+            portfolio_url='https://angel.dev',
+            avatar_seed='angel_cu_25'
         )
         db.session.add(student_profile)
         db.session.flush()

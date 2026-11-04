@@ -27,6 +27,12 @@ with app.app_context():
         if User.query.count() == 0:
             print("⚡ Vercel Cold Start: Auto-seeding demonstration data...")
             seed_database()
+        else:
+            # Ensure demo student is named Angel
+            demo_user = User.query.filter_by(uid='25BIT10180').first()
+            if demo_user and demo_user.full_name != 'Angel':
+                demo_user.full_name = 'Angel'
+                db.session.commit()
     except Exception as e:
         print(f"Database init exception: {e}")
 

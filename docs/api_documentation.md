@@ -26,7 +26,7 @@ Authenticates a student, faculty coordinator, or administrator using either UID 
       "id": 3,
       "uid": "25BIT10180",
       "email": "25bit10180@cuchd.in",
-      "full_name": "Kanishka Giri",
+      "full_name": "Angel",
       "role": "STUDENT",
       "profile": { ... }
     }

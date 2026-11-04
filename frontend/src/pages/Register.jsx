@@ -197,7 +197,7 @@ export const Register = ({ onSwitchToLogin }) => {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Kanishka Giri"
+                  placeholder="e.g. Angel"
                   value={formData.full_name}
                   onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                   required
