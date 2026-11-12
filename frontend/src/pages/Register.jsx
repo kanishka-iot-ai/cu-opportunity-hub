@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GraduationCap, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
+import { GraduationCap, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 
@@ -9,6 +9,7 @@ export const Register = ({ onSwitchToLogin }) => {
   const [skillsList, setSkillsList] = useState([]);
   const [categoriesList, setCategoriesList] = useState([]);
   const [loadingMeta, setLoadingMeta] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     uid: '',
@@ -191,9 +192,10 @@ export const Register = ({ onSwitchToLogin }) => {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. 25BIT10180"
+                  placeholder="e.g. 25BCS10101 or 25BIT10180"
                   value={formData.uid}
                   onChange={handleUidChange}
+                  autoComplete="username"
                   required
                   className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono uppercase focus:ring-2 focus:ring-red-600/20 focus:border-red-600"
                 />
@@ -207,7 +209,7 @@ export const Register = ({ onSwitchToLogin }) => {
                   type="email"
                   value={formData.email}
                   readOnly
-                  placeholder="25bit10180@cuchd.in"
+                  placeholder="25bcs10101@cuchd.in"
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-mono text-slate-600"
                 />
               </div>
@@ -218,9 +220,10 @@ export const Register = ({ onSwitchToLogin }) => {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Angel"
+                  placeholder="e.g. Kanishka Giri"
                   value={formData.full_name}
                   onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                  autoComplete="name"
                   required
                   className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-red-600/20 focus:border-red-600"
                 />
@@ -230,15 +233,26 @@ export const Register = ({ onSwitchToLogin }) => {
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Portal Password *
                 </label>
-                <input
-                  type="password"
-                  placeholder="Min 6 characters"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  required
-                  minLength={6}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-red-600/20 focus:border-red-600"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Create password (min 6 chars)"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    autoComplete="new-password"
+                    required
+                    minLength={6}
+                    className="w-full pl-3 pr-8 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-red-600/20 focus:border-red-600"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer p-0.5"
+                    title={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

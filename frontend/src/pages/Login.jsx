@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogIn, GraduationCap, Shield, UserCheck, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
+import { LogIn, GraduationCap, Shield, UserCheck, AlertCircle, CheckCircle2, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export const Login = ({ onSwitchToRegister }) => {
@@ -7,7 +7,19 @@ export const Login = ({ onSwitchToRegister }) => {
   const [identifier, setIdentifier] = useState(() => {
     return localStorage.getItem('cu_last_identifier') || '';
   });
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState(() => {
+    const justReg = localStorage.getItem('cu_just_registered');
+    if (justReg) {
+      try {
+        const saved = JSON.parse(localStorage.getItem('cu_registered_credentials') || '{}');
+        if (saved && (saved.uid === justReg || saved.email === justReg)) {
+          return saved.password || '';
+        }
+      } catch (e) {}
+    }
+    return '';
+  });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const justRegisteredUid = localStorage.getItem('cu_just_registered');
@@ -36,6 +48,7 @@ export const Login = ({ onSwitchToRegister }) => {
   const handleQuickDemo = (demoId, demoPass) => {
     setIdentifier(demoId);
     setPassword(demoPass);
+    setShowPassword(false);
     setError('');
   };
 
@@ -64,7 +77,7 @@ export const Login = ({ onSwitchToRegister }) => {
             <div className="mb-5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-start gap-2">
               <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
               <span>
-                Academic profile for <strong>{justRegisteredUid}</strong> saved successfully! Enter your password to sign in.
+                Academic profile for <strong>{justRegisteredUid}</strong> is ready! Click Sign In to access your dashboard.
               </span>
             </div>
           )}
@@ -86,6 +99,7 @@ export const Login = ({ onSwitchToRegister }) => {
                 placeholder="e.g. 25BIT10180 or 25bit10180@cuchd.in"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
+                autoComplete="username"
                 required
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all font-mono"
               />
@@ -103,14 +117,25 @@ export const Login = ({ onSwitchToRegister }) => {
                   Enter your account password
                 </span>
               </div>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter your account password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                  className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all font-sans"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
             <button
