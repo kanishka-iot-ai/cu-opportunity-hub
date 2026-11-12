@@ -40,12 +40,35 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (identifier, password) => {
     setError(null);
+    const cleanId = (identifier || '').trim();
+    const cleanPass = (password || '').trim();
     try {
-      const data = await api.login(identifier, password);
+      const data = await api.login(cleanId, cleanPass);
       setAuthToken(data.access_token);
       setUser(data.user);
+      localStorage.setItem('cu_last_identifier', cleanId);
       return data.user;
     } catch (err) {
+      // Auto-recovery for serverless cold-start storage recycling
+      const cachedRegStr = localStorage.getItem('cu_registered_credentials');
+      if (cachedRegStr) {
+        try {
+          const cachedReg = JSON.parse(cachedRegStr);
+          const idMatch = (cachedReg.uid && cachedReg.uid.toUpperCase() === cleanId.toUpperCase()) ||
+                          (cachedReg.email && cachedReg.email.toLowerCase() === cleanId.toLowerCase());
+          const passMatch = cachedReg.password === cleanPass || cachedReg.password === password;
+          if (idMatch && passMatch) {
+            console.info('🔄 Auto-syncing registered student account with active serverless instance...');
+            const regData = await api.register(cachedReg);
+            setAuthToken(regData.access_token);
+            setUser(regData.user);
+            localStorage.setItem('cu_last_identifier', cleanId);
+            return regData.user;
+          }
+        } catch (syncErr) {
+          console.error('Account auto-sync check error:', syncErr);
+        }
+      }
       setError(err.message || 'Login failed. Please verify your credentials.');
       throw err;
     }
@@ -57,6 +80,10 @@ export const AuthProvider = ({ children }) => {
       const data = await api.register(formData);
       setAuthToken(data.access_token);
       setUser(data.user);
+      if (formData.uid) {
+        localStorage.setItem('cu_last_identifier', formData.uid.trim());
+      }
+      localStorage.setItem('cu_registered_credentials', JSON.stringify(formData));
       return data.user;
     } catch (err) {
       setError(err.message || 'Registration failed.');

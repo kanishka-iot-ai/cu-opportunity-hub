@@ -150,7 +150,7 @@ $env:PYTHONPATH='backend'; .\venv\Scripts\python.exe -m pytest backend/tests
 # Linux/macOS:
 PYTHONPATH=backend pytest backend/tests
 ```
-All 9 automated unit and integration tests verify authentication, multi-criteria filtering, recommendation mathematics, and application tracking.
+All 12 automated unit and integration tests verify authentication, registration resilience, multi-criteria filtering, recommendation mathematics, and application tracking.
 
 ---
 

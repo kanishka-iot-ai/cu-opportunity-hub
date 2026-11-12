@@ -1,26 +1,33 @@
 import React, { useState } from 'react';
-import { LogIn, GraduationCap, Shield, UserCheck, AlertCircle, ArrowRight } from 'lucide-react';
+import { LogIn, GraduationCap, Shield, UserCheck, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export const Login = ({ onSwitchToRegister }) => {
   const { login } = useAuth();
-  const [identifier, setIdentifier] = useState('25BIT10180');
-  const [password, setPassword] = useState('student123');
+  const [identifier, setIdentifier] = useState(() => {
+    return localStorage.getItem('cu_last_identifier') || '';
+  });
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const justRegisteredUid = localStorage.getItem('cu_just_registered');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!identifier || !password) {
+    const cleanId = (identifier || '').trim();
+    const cleanPass = (password || '').trim();
+
+    if (!cleanId || !cleanPass) {
       setError('Please enter your Chandigarh University UID or College Email, and Password.');
       return;
     }
     setError('');
     setLoading(true);
     try {
-      await login(identifier, password);
+      await login(cleanId, cleanPass);
+      localStorage.removeItem('cu_just_registered');
     } catch (err) {
-      setError(err.message || 'Invalid credentials.');
+      setError(err.message || 'Invalid credentials. Check your UID/Email and Password.');
     } finally {
       setLoading(false);
     }
@@ -53,6 +60,15 @@ export const Login = ({ onSwitchToRegister }) => {
 
         {/* Form Body */}
         <div className="p-8">
+          {justRegisteredUid && !error && (
+            <div className="mb-5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-start gap-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
+              <span>
+                Academic profile for <strong>{justRegisteredUid}</strong> saved successfully! Enter your password to sign in.
+              </span>
+            </div>
+          )}
+
           {error && (
             <div className="mb-5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -84,7 +100,7 @@ export const Login = ({ onSwitchToRegister }) => {
                   Password
                 </label>
                 <span className="text-[11px] text-slate-400">
-                  Default: student123 / admin123
+                  Enter your account password
                 </span>
               </div>
               <input

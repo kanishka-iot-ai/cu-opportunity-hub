@@ -104,15 +104,29 @@ export const Register = ({ onSwitchToLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.uid || !formData.full_name || !formData.password) {
+    const cleanUid = (formData.uid || '').trim().toUpperCase();
+    const cleanName = (formData.full_name || '').trim();
+    const cleanPass = (formData.password || '').trim();
+
+    if (!cleanUid || !cleanName || !cleanPass) {
       setError('UID, Full Name, and Password are required.');
+      return;
+    }
+    if (cleanPass.length < 6) {
+      setError('Password must be at least 6 characters long.');
       return;
     }
     setError('');
     setLoading(true);
     try {
+      localStorage.setItem('cu_last_identifier', cleanUid);
+      localStorage.setItem('cu_just_registered', cleanUid);
       await register({
         ...formData,
+        uid: cleanUid,
+        email: formData.email ? formData.email.trim().toLowerCase() : `${cleanUid.toLowerCase()}@cuchd.in`,
+        full_name: cleanName,
+        password: cleanPass,
         department_id: formData.department_id ? parseInt(formData.department_id) : null,
         course_id: formData.course_id ? parseInt(formData.course_id) : null,
         current_semester: parseInt(formData.current_semester),
@@ -123,6 +137,13 @@ export const Register = ({ onSwitchToLogin }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSwitchToLogin = () => {
+    if (formData.uid) {
+      localStorage.setItem('cu_last_identifier', formData.uid.trim().toUpperCase());
+    }
+    onSwitchToLogin();
   };
 
   const currentDept = departments.find((d) => d.id === parseInt(formData.department_id));
@@ -142,7 +163,7 @@ export const Register = ({ onSwitchToLogin }) => {
             </div>
           </div>
           <button
-            onClick={onSwitchToLogin}
+            onClick={handleSwitchToLogin}
             className="text-xs text-red-100 hover:text-white flex items-center gap-1 font-semibold cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Sign In
@@ -357,7 +378,7 @@ export const Register = ({ onSwitchToLogin }) => {
           <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
             <button
               type="button"
-              onClick={onSwitchToLogin}
+              onClick={handleSwitchToLogin}
               className="text-xs text-slate-500 hover:text-slate-800"
             >
               Already registered? Sign In
